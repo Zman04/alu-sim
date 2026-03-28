@@ -46,13 +46,15 @@ async def perform_negate(dut) -> None:
     """
     await perform_not(dut)
 
+    await RisingEdge(dut.clk)
+
     dut.s1.value = dut.d.value
     dut.s2.value = 1
     dut.funct3.value = 0
     await RisingEdge(dut.clk)
 
 
-async def perform_sub(dut) -> None:
+async def perform_sub(dut, val1, val2) -> None:
     """
     sub rd, rs1, rs2
 
@@ -61,7 +63,20 @@ async def perform_sub(dut) -> None:
     :param s2: Second value as described in R sub
     :return: None
     """
-    raise NotImplementedError("Implement sub")
+
+
+    dut.s1.value = val2
+    await perform_negate(dut)
+
+    await RisingEdge(dut.clk)
+
+    dut.s1.value = val1
+    dut.s2.value = int(dut.d.value)
+    dut.funct3.value = 0
+
+    print("DEBUG: val1 is %s, and the negated val2 is %s" % (val1, int(dut.d.value)))
+    await RisingEdge(dut.clk)
+
 
 
 async def set_gt(dut):
@@ -148,8 +163,13 @@ async def run_alu_sim(dut):
     await RisingEdge(dut.clk)
     dut.s1.value = 5
     await perform_negate(dut)
-
+    await RisingEdge(dut.clk)
     print("perform negate: %s" % dut.d.value)
+
+    await RisingEdge(dut.clk)
+    await perform_sub(dut, 5, 5)
+    await RisingEdge(dut.clk)
+    print("perform subtraction: %s" %dut.d.value)
 
 
 def test_via_cocotb():
