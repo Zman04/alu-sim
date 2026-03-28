@@ -1,0 +1,4 @@
+**/__pycache__/
+*.pyc
+alu_sim_dir
+.DS_Store

@@ -44,7 +44,12 @@ async def perform_negate(dut) -> None:
     :param dut: DUT object from cocotb
     :return: None
     """
-    raise NotImplementedError("Implement negate")
+    await perform_not(dut)
+
+    dut.s1.value = dut.d.value
+    dut.s2.value = 1
+    dut.funct3.value = 0
+    await RisingEdge(dut.clk)
 
 
 async def perform_sub(dut) -> None:
@@ -129,9 +134,8 @@ async def run_alu_sim(dut):
     print("Hello World!")
 
     await RisingEdge(dut.clk)
-    dut.s1.value = 5
-    dut.s2.value = 5
-    dut.funct3.value = 4
+    dut.s1.value = 3
+    await perform_not(dut)
 
     print("clock 0: %s" % dut.d.value)
 
@@ -139,7 +143,14 @@ async def run_alu_sim(dut):
     print("clock 1: %s" % dut.d.value)
 
     await RisingEdge(dut.clk)
-    print("clock 2: %s Zero: %s" % (dut.d.value, dut.zero.value))
+    print("clock 2: %s" % dut.d.value)
+
+    await RisingEdge(dut.clk)
+    dut.s1.value = 5
+    await perform_negate(dut)
+
+    print("perform negate: %s" % dut.d.value)
+
 
 def test_via_cocotb():
     """
