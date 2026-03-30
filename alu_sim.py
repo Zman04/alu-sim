@@ -79,7 +79,7 @@ async def perform_sub(dut, val1, val2) -> None:
 
 
 
-async def set_gt(dut):
+async def set_gt(dut, val1, val2):
     """
     In the same format as slt, rd, rsq, rs2 perform the operation to set the output LSB bit to rs1 > rs2.
 
@@ -87,14 +87,37 @@ async def set_gt(dut):
     :return:
     """
 
+    dut.s1.value = val2
+    dut.s2.value = val1
 
-async def set_gte(dut):
+    dut.funct3.value = 3
+
+    await RisingEdge(dut.clk)
+
+
+async def set_gte(dut, val1, val2):
     """
     In the same format as slt rd, rs1, rs2 perform the operation to set the output LSB bit to rs1 >= rs2.
 
     :param dut: DUT object from cocotb
     :return:
     """
+
+    dut.s1.value = val1
+    dut.s2.value = val2
+    dut.funct3.value = 3
+
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+
+    dut.s1.value = int(dut.d.value)
+    dut.s2.value = 1
+
+    dut.funct3.value = 4
+
+    await RisingEdge(dut.clk)
+
+
 
 
 async def f_set_e(dut):
@@ -170,6 +193,16 @@ async def run_alu_sim(dut):
     await perform_sub(dut, 5, 5)
     await RisingEdge(dut.clk)
     print("perform subtraction: %s" %dut.d.value)
+
+    await RisingEdge(dut.clk)
+    await set_gt(dut, 10, 2)
+    await RisingEdge(dut.clk)
+    print("set gt: %s" %dut.d.value)
+
+    await RisingEdge(dut.clk)
+    await set_gte(dut, 10, 2)
+    await RisingEdge(dut.clk)
+    print("set gte: %s" %dut.d.value)
 
 
 def test_via_cocotb():
