@@ -129,13 +129,19 @@ async def f_set_e(dut):
     """
 
 
-async def f_set_lt(dut):
+async def f_set_lt(dut, val1, val2):
     """
     In the same format as flt.s rd, rs1, rs2 perform a floating point less than comparison.
 
     :param dut:
     :return:
     """
+
+    dut.s1.value = val1
+    dut.s2.value = val2
+    dut.funct3.value = 3
+
+    await RisingEdge(dut.clk)
 
 
 async def f_set_lte(dut):
@@ -204,6 +210,10 @@ async def run_alu_sim(dut):
     await RisingEdge(dut.clk)
     print("set gte: %s" %dut.d.value)
 
+    await RisingEdge(dut.clk)
+    await f_set_lt(dut, 10, 2)
+    await RisingEdge(dut.clk)
+    print("f_set_lt: %s" %dut.d.value)
 
 def test_via_cocotb():
     """

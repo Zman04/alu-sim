@@ -1,6 +1,6 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1774727709" />
-    <testcase name="run_alu_sim" classname="alu_sim" file="/Users/zaust/Documents/schoolLocal/spring-2026/cs-4200-architecture/alu-sim/alu_sim.py" lineno="144" time="0.0038330554962158203" sim_time_ns="156.0" ratio_time="40698.601977980965" />
+    <property name="random_seed" value="1775071412" />
+    <testcase name="run_alu_sim" classname="alu_sim" file="/Users/zaust/Documents/schoolLocal/spring-2026/cs-4200-architecture/alu-sim/alu_sim.py" lineno="173" time="0.005715847015380859" sim_time_ns="266.0" ratio_time="46537.28472511888" />
   </testsuite>
 </testsuites>
