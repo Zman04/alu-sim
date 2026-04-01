@@ -74,7 +74,6 @@ async def perform_sub(dut, val1, val2) -> None:
     dut.s2.value = int(dut.d.value)
     dut.funct3.value = 0
 
-    print("DEBUG: val1 is %s, and the negated val2 is %s" % (val1, int(dut.d.value)))
     await RisingEdge(dut.clk)
 
 
@@ -108,7 +107,6 @@ async def set_gte(dut, val1, val2):
     dut.funct3.value = 3
 
     await RisingEdge(dut.clk)
-    await RisingEdge(dut.clk)
 
     dut.s1.value = int(dut.d.value)
     dut.s2.value = 1
@@ -120,13 +118,25 @@ async def set_gte(dut, val1, val2):
 
 
 
-async def f_set_e(dut):
+async def f_set_e(dut, val1, val2):
     """
     In the same format as feq.s rd, rs1, rs2 perform a floating point equal comparison.
 
     :param dut:
     :return:
     """
+
+    dut.s1.value = val1
+    dut.s2.value = val2
+    dut.funct3.value = 4
+
+    await RisingEdge(dut.clk)
+
+    dut.s1.value = int(dut.d.value)
+    dut.s2.value = 1
+    dut.funct3.value = 3
+
+    await RisingEdge(dut.clk)
 
 
 async def f_set_lt(dut, val1, val2):
@@ -144,13 +154,25 @@ async def f_set_lt(dut, val1, val2):
     await RisingEdge(dut.clk)
 
 
-async def f_set_lte(dut):
+async def f_set_lte(dut, val1, val2):
     """
     In the same format as fle.s rd, rs1, rs2 perform a floating point less than or equal comparison.
 
     :param dut:
     :return:
     """
+
+    dut.s1.value = val2
+    dut.s2.value = val1
+    dut.funct3.value = 3
+
+    await RisingEdge(dut.clk)
+
+    dut.s1.value = int(dut.d.value)
+    dut.s2.value = 1
+    dut.funct3.value = 4
+
+    await RisingEdge(dut.clk)
 
 
 async def perform_multiplication(dut):
@@ -214,6 +236,16 @@ async def run_alu_sim(dut):
     await f_set_lt(dut, 10, 2)
     await RisingEdge(dut.clk)
     print("f_set_lt: %s" %dut.d.value)
+
+    await RisingEdge(dut.clk)
+    await f_set_e(dut, 5, 5)
+    await RisingEdge(dut.clk)
+    print("f_set_e %s" %dut.d.value)
+
+    await RisingEdge(dut.clk)
+    await f_set_lte(dut, 7, 6) # yeah dude I don't know what the heck is going on with this one.
+    await RisingEdge(dut.clk)
+    print("f_set_lte %s" %dut.d.value)
 
 def test_via_cocotb():
     """
