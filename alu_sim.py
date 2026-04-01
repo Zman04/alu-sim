@@ -243,7 +243,7 @@ async def run_alu_sim(dut):
     print("f_set_e %s" %dut.d.value)
 
     await RisingEdge(dut.clk)
-    await f_set_lte(dut, 7, 6) # yeah dude I don't know what the heck is going on with this one.
+    await f_set_lte(dut, 6, 6)
     await RisingEdge(dut.clk)
     print("f_set_lte %s" %dut.d.value)
 
