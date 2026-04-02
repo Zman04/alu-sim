@@ -6,6 +6,8 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.runner import get_runner
 from cocotb.triggers import RisingEdge
+from cocotb.triggers import RisingEdge, ReadOnly
+from cocotb.triggers import Timer
 
 alu_sim_dir = os.path.abspath(os.path.join('.', 'alu_sim_dir'))
 
@@ -192,6 +194,7 @@ async def perform_multiplication(dut, val1, val2):
         dut.funct3.value = 7 # Test Multiplier 0
 
         await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
 
         if int(dut.d.value):
             dut.s1.value = product
@@ -199,6 +202,7 @@ async def perform_multiplication(dut, val1, val2):
 
             dut.funct3.value = 0
 
+            await RisingEdge(dut.clk)
             await RisingEdge(dut.clk)
 
             product = int(dut.d.value)
@@ -212,6 +216,7 @@ async def perform_multiplication(dut, val1, val2):
         dut.funct3.value = 1 # sll
 
         await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
 
         val1 = int(dut.d.value) # Newly shifted result is now on output wire
 
@@ -221,6 +226,7 @@ async def perform_multiplication(dut, val1, val2):
         dut.funct3.value = 5 #srl
 
         await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
 
         val2 = int(dut.d.value)
 
@@ -229,6 +235,7 @@ async def perform_multiplication(dut, val1, val2):
 
         dut.funct3.value = 0
 
+        await RisingEdge(dut.clk)
         await RisingEdge(dut.clk)
 
 
@@ -247,7 +254,9 @@ async def run_alu_sim(dut):
     clock = Clock(dut.clk, period=10, units='ns') # This assigns the clock into the ALU
     cocotb.start_soon(clock.start(start_high=False))
 
-    '''print("Hello World!")
+    dut.funct7.value = 0
+
+    print("Hello World!")
 
     await RisingEdge(dut.clk)
     dut.s1.value = 3
@@ -295,10 +304,10 @@ async def run_alu_sim(dut):
     await RisingEdge(dut.clk)
     await f_set_lte(dut, 6, 6)
     await RisingEdge(dut.clk)
-    print("f_set_lte %s" %dut.d.value)'''
+    print("f_set_lte %s" %dut.d.value)
 
     await RisingEdge(dut.clk)
-    await perform_multiplication(dut, 2, 1)
+    await perform_multiplication(dut, 0, 1)
     await RisingEdge(dut.clk)
     print("Multiplication %s" %dut.d.value)
 

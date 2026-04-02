@@ -1,6 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1775082868" />
-    <testcase name="run_alu_sim" classname="alu_sim" file="/Users/zaust/Documents/schoolLocal/spring-2026/cs-4200-architecture/alu-sim/alu_sim.py" lineno="195" time="0.006975889205932617" sim_time_ns="346.0" ratio_time="49599.41159984962" />
-  </testsuite>
-</testsuites>
