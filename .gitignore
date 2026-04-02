@@ -2,3 +2,5 @@
 *.pyc
 alu_sim_dir
 .DS_Store
+results.xml
+alu_sim_working.py
