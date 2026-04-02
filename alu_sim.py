@@ -171,11 +171,13 @@ async def f_set_lte(dut, val1, val2):
     dut.funct3.value = 3
 
     await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
 
     dut.s1.value = int(dut.d.value)
     dut.s2.value = 1
     dut.funct3.value = 4
 
+    await RisingEdge(dut.clk)
     await RisingEdge(dut.clk)
 
 
@@ -304,7 +306,7 @@ async def run_alu_sim(dut):
     print("f_set_e %s" %dut.d.value)
 
     await RisingEdge(dut.clk)
-    await f_set_lte(dut, 6, 6)
+    await f_set_lte(dut, 7, 6)
     await RisingEdge(dut.clk)
     print("f_set_lte %s" %dut.d.value)
 
