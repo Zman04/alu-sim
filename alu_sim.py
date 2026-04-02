@@ -175,13 +175,63 @@ async def f_set_lte(dut, val1, val2):
     await RisingEdge(dut.clk)
 
 
-async def perform_multiplication(dut):
+async def perform_multiplication(dut, val1, val2):
     """
     In the same format as mul rd, rs1, rs2 perform multiplication.
 
     :param dut:
     :return:
     """
+
+    product = 0
+
+    for i in range(32):
+        dut.s1.value = val2
+        dut.s2.value = 1
+
+        dut.funct3.value = 7 # Test Multiplier 0
+
+        await RisingEdge(dut.clk)
+
+        if int(dut.d.value):
+            dut.s1.value = product
+            dut.s2.value = val1
+
+            dut.funct3.value = 0
+
+            await RisingEdge(dut.clk)
+
+            product = int(dut.d.value)
+
+        else:
+            pass
+
+        dut.s1.value = val1 # Assign multiplicand to first pin
+        dut.s2.value = 1 # Shift 1
+
+        dut.funct3.value = 1 # sll
+
+        await RisingEdge(dut.clk)
+
+        val1 = int(dut.d.value) # Newly shifted result is now on output wire
+
+        dut.s1.value = val2 # Assign multiplier to first pin
+        dut.s2.value = 1 # Shift right one
+
+        dut.funct3.value = 5 #srl
+
+        await RisingEdge(dut.clk)
+
+        val2 = int(dut.d.value)
+
+        dut.s1.value = product
+        dut.s2.value = 0
+
+        dut.funct3.value = 0
+
+        await RisingEdge(dut.clk)
+
+
 
 
 async def perform_division(dut):
@@ -197,7 +247,7 @@ async def run_alu_sim(dut):
     clock = Clock(dut.clk, period=10, units='ns') # This assigns the clock into the ALU
     cocotb.start_soon(clock.start(start_high=False))
 
-    print("Hello World!")
+    '''print("Hello World!")
 
     await RisingEdge(dut.clk)
     dut.s1.value = 3
@@ -245,7 +295,12 @@ async def run_alu_sim(dut):
     await RisingEdge(dut.clk)
     await f_set_lte(dut, 6, 6)
     await RisingEdge(dut.clk)
-    print("f_set_lte %s" %dut.d.value)
+    print("f_set_lte %s" %dut.d.value)'''
+
+    await RisingEdge(dut.clk)
+    await perform_multiplication(dut, 2, 1)
+    await RisingEdge(dut.clk)
+    print("Multiplication %s" %dut.d.value)
 
 def test_via_cocotb():
     """
