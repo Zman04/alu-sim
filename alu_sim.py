@@ -3,6 +3,8 @@ Zachary Austin
 CS 4200
 alu-sim
 4/2/26
+
+division is cooked bro don't even worry about it
 '''
 
 from enum import Enum
