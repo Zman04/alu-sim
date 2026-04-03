@@ -1,3 +1,5 @@
+
+
 from enum import Enum
 import os
 
@@ -6,8 +8,6 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.runner import get_runner
 from cocotb.triggers import RisingEdge
-from cocotb.triggers import RisingEdge, ReadOnly
-from cocotb.triggers import Timer
 
 alu_sim_dir = os.path.abspath(os.path.join('.', 'alu_sim_dir'))
 
@@ -25,7 +25,7 @@ class Funct3(Enum):
 
 async def perform_not(dut) -> None:
     """
-    ~
+    ~ 1 Cycle
 
     :param dut: DUT object from cocotb
     :return: None
@@ -41,6 +41,8 @@ async def perform_not(dut) -> None:
 
 async def perform_negate(dut) -> None:
     """
+    ~ 3 Cycles
+
     Perform the two's complement.
 
     :param dut: DUT object from cocotb
@@ -58,6 +60,8 @@ async def perform_negate(dut) -> None:
 
 async def perform_sub(dut, val1, val2) -> None:
     """
+    ~ 5 Cycles
+
     sub rd, rs1, rs2
 
     :param dut: Dut object from cocotb
@@ -82,6 +86,8 @@ async def perform_sub(dut, val1, val2) -> None:
 
 async def set_gt(dut, val1, val2):
     """
+    ~1 Cycle
+
     In the same format as slt, rd, rsq, rs2 perform the operation to set the output LSB bit to rs1 > rs2.
 
     :param dut:
@@ -91,13 +97,15 @@ async def set_gt(dut, val1, val2):
     dut.s1.value = val2
     dut.s2.value = val1
 
-    dut.funct3.value = 3
+    dut.funct3.value = 2
 
     await RisingEdge(dut.clk)
 
 
 async def set_gte(dut, val1, val2):
     """
+    ~ 4 Cycles
+
     In the same format as slt rd, rs1, rs2 perform the operation to set the output LSB bit to rs1 >= rs2.
 
     :param dut: DUT object from cocotb
@@ -106,7 +114,7 @@ async def set_gte(dut, val1, val2):
 
     dut.s1.value = val1
     dut.s2.value = val2
-    dut.funct3.value = 3
+    dut.funct3.value = 2
 
     await RisingEdge(dut.clk)
     await RisingEdge(dut.clk)
@@ -124,6 +132,7 @@ async def set_gte(dut, val1, val2):
 
 async def f_set_e(dut, val1, val2):
     """
+    ~ 2 Cycles
     In the same format as feq.s rd, rs1, rs2 perform a floating point equal comparison.
 
     :param dut:
@@ -145,6 +154,7 @@ async def f_set_e(dut, val1, val2):
 
 async def f_set_lt(dut, val1, val2):
     """
+    ~ 1 Cycle
     In the same format as flt.s rd, rs1, rs2 perform a floating point less than comparison.
 
     :param dut:
@@ -160,6 +170,7 @@ async def f_set_lt(dut, val1, val2):
 
 async def f_set_lte(dut, val1, val2):
     """
+    ~ 4 Cycles
     In the same format as fle.s rd, rs1, rs2 perform a floating point less than or equal comparison.
 
     :param dut:
@@ -281,6 +292,8 @@ async def perform_division(dut, val1, val2):
 
             await RisingEdge(dut.clk)
             await RisingEdge(dut.clk)
+
+            quotient = int(dut.d.value)
         else:
             dut.s1.value = val2
             dut.s2.value = remainder
@@ -301,6 +314,16 @@ async def perform_division(dut, val1, val2):
             await RisingEdge(dut.clk)
 
             quotient = int(dut.d.value)
+
+        dut.s1.value = val2
+        dut.s2.value = 1
+
+        dut.funct3.value = 5
+
+        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
+
+        val2 = int(dut.d.value)
         
     dut.s1.value = quotient
     dut.s2.value = 0
@@ -372,6 +395,11 @@ async def run_alu_sim(dut):
     await perform_multiplication(dut, 7, 1)
     await RisingEdge(dut.clk)
     print("Multiplication %s" %dut.d.value)
+
+    await RisingEdge(dut.clk)
+    await perform_division(dut, 2, 2)
+    await RisingEdge(dut.clk)
+    print("Division %s" %dut.d.value)
 
 def test_via_cocotb():
     """
