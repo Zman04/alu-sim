@@ -1,4 +1,9 @@
-
+'''
+Zachary Austin
+CS 4200
+alu-sim
+4/2/26
+'''
 
 from enum import Enum
 import os
