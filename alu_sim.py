@@ -242,16 +242,74 @@ async def perform_multiplication(dut, val1, val2):
         await RisingEdge(dut.clk)
         await RisingEdge(dut.clk)
 
+        
 
 
 
-async def perform_division(dut):
+
+async def perform_division(dut, val1, val2):
     """
     In the same format as mul rd, rs1, rs2 perform multiplication.
 
     :param dut:
     :return:
     """
+    quotient = 0
+    remainder = val1
+
+    for i in range(33):
+        await perform_sub(dut, remainder, val2)
+        remainder = int(dut.d.value)
+
+        await set_gte(dut, remainder, 0)
+        
+        if int(dut.d.value):
+            dut.s1.value = quotient
+            dut.s2.value = 1
+
+            dut.funct3.value = 1 # sll
+
+            await RisingEdge(dut.clk)
+            await RisingEdge(dut.clk)
+
+            quotient = int(dut.d.value)
+
+            dut.s1.value = int(dut.d.value)
+            dut.s2.value = 1
+            
+            dut.funct3.value = 4
+
+            await RisingEdge(dut.clk)
+            await RisingEdge(dut.clk)
+        else:
+            dut.s1.value = val2
+            dut.s2.value = remainder
+
+            dut.funct3.value = 0
+
+            await RisingEdge(dut.clk)
+            await RisingEdge(dut.clk)
+
+            remainder = int(dut.d.value)
+
+            dut.s1.value = quotient
+            dut.s2.value = 1
+
+            dut.funct3.value = 1
+
+            await RisingEdge(dut.clk)
+            await RisingEdge(dut.clk)
+
+            quotient = int(dut.d.value)
+        
+    dut.s1.value = quotient
+    dut.s2.value = 0
+
+    dut.funct3.value = 0
+
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+
 
 @cocotb.test()
 async def run_alu_sim(dut):
@@ -311,7 +369,7 @@ async def run_alu_sim(dut):
     print("f_set_lte %s" %dut.d.value)
 
     await RisingEdge(dut.clk)
-    await perform_multiplication(dut, 0, 1)
+    await perform_multiplication(dut, 7, 1)
     await RisingEdge(dut.clk)
     print("Multiplication %s" %dut.d.value)
 
